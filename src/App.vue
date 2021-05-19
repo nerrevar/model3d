@@ -1,30 +1,30 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <SideBar
+    imgLogo="imgLogo"
+  />
+  <HeaderComponent />
+  <router-view />
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { useStore } from '@/store'
 
-#nav {
-  padding: 30px;
+import SideBar from '@/components/SideBar/index.vue'
+import HeaderComponent from '@/components/HeaderComponent/index.vue'
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+export default defineComponent({
+  name: 'Layout',
+  components: {
+    SideBar,
+    HeaderComponent,
+  },
+  setup () {
+    const store = useStore()
 
-    &.router-link-exact-active {
-      color: #42b983;
+    return {
+      imgLogo: store.state.imgLogo,
     }
-  }
-}
-</style>
+  },
+})
+</script>

@@ -1,6 +1,6 @@
 <template>
   <SideBar
-    imgLogo="imgLogo"
+    :imgLogo="imgLogo"
   />
   <HeaderComponent />
   <router-view />

@@ -7,6 +7,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'HomeView',
     component: HomeView,
   },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
+  }
 ]
 
 const router = createRouter({

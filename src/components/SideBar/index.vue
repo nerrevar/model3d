@@ -8,13 +8,13 @@
       <div class="sidebar-title">
         <img
           class="sidebar-title__logo"
-          :src="~imgLogo"
+          :src="imgLogo"
           :title="host"
-          @click="$router.push('/')"
+          @click.stop="$router.push('/')"
         />
         <img
           class="sidebar-title__close-button"
-          @click="setSidebarOpened(false)"
+          @click.stop="setSidebarOpened(false)"
           :src="imgClose"
           alt="X"
         />
@@ -67,7 +67,7 @@ export default defineComponent({
     imgClose: {
       type: String,
       required: false,
-      default: './assets/close.png',
+      default: '/assets/img/close.svg',
     },
     items: {
       type: Array as () => Array<ISidebarItem>,
@@ -82,12 +82,12 @@ export default defineComponent({
   setup (props) {
     const router = useRouter()
 
-    const isSidebarOpened = ref(true)
+    const isSidebarOpened = ref(false)
 
     const getSidebarItems = () => {
       if (props.items === undefined)
         return router.options.routes
-          .filter((r: RouteRecordRaw) => ['*', ...props.pathFilters].indexOf(r.path) === -1)
+          .filter((r: RouteRecordRaw) => ['/:pathMatch(.*)*', ...props.pathFilters].indexOf(r.path) === -1)
           .map((r: RouteRecordRaw): ISidebarItem => {
             return { text: r.name ? r.name.toString() : r.path }
           })

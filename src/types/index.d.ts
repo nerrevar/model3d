@@ -1,3 +1,3 @@
-export { State } from './State'
+export { State, IFirebaseConfig } from './State'
 
 export { IAuthItem } from './Auth'

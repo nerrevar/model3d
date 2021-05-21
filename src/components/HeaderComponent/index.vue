@@ -9,7 +9,7 @@
     <div class="header-toolbox">
       <CustomDropdown
         class="header-toolbox__auth"
-        v-if="!authorized"
+        v-if="user === null"
         imgTitle="/assets/img/account_white.svg"
         textTitle="Sign in"
         :openOnHover="true"
@@ -20,14 +20,23 @@
         class="header-toolbox__auth-complete"
         v-else
       >
-        {{ user.name }}
+        <img
+          class="header-toolbox__auth-complete__img"
+          :src="user.photoURL"
+          alt=""
+        />
+        <span
+          class="header-toolbox__auth-complete__text"
+        >
+          {{ user.displayName }}
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
 import { useStore } from '@/store'
 
 import {
@@ -35,7 +44,8 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
-  AuthProvider
+  browserLocalPersistence,
+
 } from 'firebase/auth'
 
 import { IAuthItem } from '@/types'
@@ -54,16 +64,20 @@ export default defineComponent({
       {
         type: 'google',
         name: 'Google',
+        imgSrc: '/assets/img/google_white.svg',
       },
       {
         type: 'github',
         name: 'GitHub',
+        imgSrc: '/assets/img/github_white.svg',
       }
     ]
 
     const auth = (item: IAuthItem) => {
       const auth = getAuth(store.state.Firebase.app)
-      const getProvider = (): AuthProvider => {
+      auth.useDeviceLanguage()
+      auth.setPersistence(browserLocalPersistence)
+      const getProvider = (): GoogleAuthProvider | GithubAuthProvider => {
         switch (item.type) {
           case 'google': {
             const provider: GoogleAuthProvider = new GoogleAuthProvider()
@@ -80,12 +94,23 @@ export default defineComponent({
             provider.addScope('user:email')
             return provider
           }
-          default: return new GoogleAuthProvider()
+          default: throw new Error('Invalid auth provider type!')
         }
       }
+      const provider: GoogleAuthProvider | GithubAuthProvider = getProvider()
+      const isGoogle = typeof provider === typeof GoogleAuthProvider
       signInWithPopup(auth, getProvider())
-        .then(result => {
-          store.commit('setUser', result.user)
+        .then(userCredential => {
+          store.commit('setUser', userCredential.user)
+          localStorage.setItem(
+            'authCredential',
+            JSON.stringify(
+              isGoogle
+                ? GoogleAuthProvider.credentialFromResult(userCredential)!
+                : GithubAuthProvider.credentialFromResult(userCredential)!
+            )
+          )
+          localStorage.setItem('userInfo', JSON.stringify(userCredential.user))
         })
         .catch(error => {
           console.log(`Auth error ${error.code}: ${error.message}`)
@@ -94,7 +119,7 @@ export default defineComponent({
 
     return {
       imgLogo: store.state.imgLogo,
-      authorized: store.state.IsAuthorized,
+      user: computed(() => store.state.User),
       itemsAuth,
       auth,
     }
@@ -103,6 +128,11 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
+$titleBackground: #CE93D8
+$color: white
+=shadow
+  box-shadow: 1px 1px 5px grey
+
 .header
   display: flex
   flex-flow: row nowrap
@@ -120,4 +150,16 @@ export default defineComponent({
     flex-flow: row-reverse nowrap
 
     height: 2.2em
+
+    &__auth-complete
+      display: flex
+      flex: 0 0
+      padding: 0.3em
+      background-color: $titleBackground
+      color: $color
+      +shadow
+
+      &__img
+        margin-right: 1em
+        border-radius: 50%
 </style>

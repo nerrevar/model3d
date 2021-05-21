@@ -10,7 +10,7 @@
   >
     <div class="dropdown-title">
       <img
-        class="dropdown-tite__img"
+        class="dropdown-title__img"
         v-if="imgTitle !== ''"
         :src="imgTitle"
         alt=""
@@ -112,14 +112,22 @@ $color: white
   &-title, &-item
     padding: 0.5em 1.5em
     line-height: 1.2em
+    display: flex
+    align-items: center
 
   &-title
     background-color: $titleBackground
     +shadow
+
+    &__img
+      margin-right: 1em
 
   &-item
     background-color: $itemBackgrount
 
     &:hover
       background-color: lighten($itemBackgrount, 3)
+
+    &__img
+      margin-right: 1em
 </style>

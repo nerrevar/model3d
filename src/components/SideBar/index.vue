@@ -23,6 +23,7 @@
         class="sidebar-item"
         v-for="(item, index) in sidebarItems"
         :key="index"
+        @click="item.action ? item.action : null"
       >
         <img
           class="sidebar-item__prepend-icon"
@@ -84,12 +85,23 @@ export default defineComponent({
 
     const isSidebarOpened = ref(false)
 
+    const getIcon = (path: string): string | undefined => {
+      switch (path) {
+        case '/': return '/assets/img/home_white.svg'
+        case '/about': return '/assets/img/info_white.svg'
+        default: return undefined
+      }
+    }
     const getSidebarItems = () => {
       if (props.items === undefined)
         return router.options.routes
           .filter((r: RouteRecordRaw) => ['/:pathMatch(.*)*', ...props.pathFilters].indexOf(r.path) === -1)
           .map((r: RouteRecordRaw): ISidebarItem => {
-            return { text: r.name ? r.name.toString() : r.path }
+            return {
+              imgSrcPrependIcon: getIcon(r.path),
+              text: r.name ? r.name.toString() : r.path,
+              action: () => router.push(r.path),
+            }
           })
       else
         return props.items
@@ -158,8 +170,9 @@ $itemBackground: lighten($sidebarBackground, 3)
       background-color: lighten($itemBackground, 3)
 
     &__prepend-icon, &__append-icon
-      width: 32px
-      height: 32px
+      margin: 0 0.5em
+      width: 1.2em
+      height: 1.2em
       object-fit: contain
 
     &__text

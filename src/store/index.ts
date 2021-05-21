@@ -4,7 +4,7 @@ import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import { initializeApp } from 'firebase/app'
 
 import { State, IFirebaseConfig } from '@/types'
-import { User } from 'firebase/auth'
+import { User, getAuth } from 'firebase/auth'
 
 const firebaseConfig: IFirebaseConfig = {
   apiKey: 'AIzaSyBoOuFaBPdtbqG_Stx6_Zq5nGDFdfHe75g',
@@ -17,7 +17,7 @@ const firebaseConfig: IFirebaseConfig = {
 
 export const store = createStore<State>({
   state: {
-    imgLogo: '/assets/img/logo.png',
+    imgLogo: '/assets/img/logo.gif',
     IsAuthorized: false,
     Firebase: {
       app: initializeApp(firebaseConfig),
@@ -25,7 +25,7 @@ export const store = createStore<State>({
     User: null,
   },
   mutations: {
-    setUser: (state: State, user: User) => {
+    setUser: (state: State, user: User | null) => {
       state.User = user
     },
   },

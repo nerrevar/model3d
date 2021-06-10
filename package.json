@@ -51,6 +51,16 @@
       "ecmaVersion": 2020
     },
     "rules": {
+      "max-len": ["warn", {
+        "code": 80,
+        "tabWidth": 2,
+        "ignoreComments": false,
+        "ignoreTrailingComments": false,
+        "ignoreUrls": false,
+        "ignoreStrings": false,
+        "ignoreTemplateLiterals": false,
+        "ignoreRegExpLiterals": false
+      }],
       "no-console": "warn",
       "no-debugger": "warn",
       "comma-dangle": [
@@ -87,7 +97,8 @@
       "@typescript-eslint/interface-name-prefix": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-explicit-any": "off"
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-non-null-assertion": "off"
     }
   },
   "browserslist": [

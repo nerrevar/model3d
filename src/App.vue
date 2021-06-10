@@ -15,7 +15,7 @@ import {
   reauthenticateWithCredential,
   User,
   AuthCredential,
-  SignInMethod,
+  SignInMethod
 } from 'firebase/auth'
 
 import SideBar from '@/components/SideBar/index.vue'

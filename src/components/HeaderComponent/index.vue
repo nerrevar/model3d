@@ -44,7 +44,7 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
-  browserLocalPersistence,
+  browserLocalPersistence
 
 } from 'firebase/auth'
 

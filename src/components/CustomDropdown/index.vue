@@ -85,7 +85,7 @@ export default defineComponent({
       setOpened,
       onHover,
     }
-  }
+  },
 })
 </script>
 

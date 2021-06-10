@@ -95,7 +95,10 @@ export default defineComponent({
     const getSidebarItems = () => {
       if (props.items === undefined)
         return router.options.routes
-          .filter((r: RouteRecordRaw) => ['/:pathMatch(.*)*', ...props.pathFilters].indexOf(r.path) === -1)
+          .filter(
+            (r: RouteRecordRaw) => ['/:pathMatch(.*)*', ...props.pathFilters]
+              .indexOf(r.path) === -1
+          )
           .map((r: RouteRecordRaw): ISidebarItem => {
             return {
               imgSrcPrependIcon: getIcon(r.path),

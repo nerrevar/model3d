@@ -1,5 +1,8 @@
 import { FirebaseApp } from 'firebase/app'
-import { User } from 'firebase/auth'
+import { FirebaseAuth, User } from 'firebase/auth'
+import { FirebaseFirestore } from 'firebase/firestore'
+
+import { IModel } from './Model'
 
 export interface IFirebaseConfig {
   apiKey: string,
@@ -15,6 +18,12 @@ export interface State {
   IsAuthorized: boolean,
   Firebase: {
     app: FirebaseApp,
+    auth: FirebaseAuth,
+    db: FirebaseFirestore,
   },
   User: User | null,
+  Models: {
+    rated: Array<IModel>,
+    currentList: Array<IModel>,
+  },
 }

@@ -3,8 +3,9 @@ import { createStore, useStore as baseUseStore, Store } from 'vuex'
 
 import { initializeApp } from 'firebase/app'
 
-import { State, IFirebaseConfig } from '@/types'
+import { State, IFirebaseConfig, IModel } from '@/types'
 import { User, getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig: IFirebaseConfig = {
   apiKey: 'AIzaSyBoOuFaBPdtbqG_Stx6_Zq5nGDFdfHe75g',
@@ -21,12 +22,27 @@ export const store = createStore<State>({
     IsAuthorized: false,
     Firebase: {
       app: initializeApp(firebaseConfig),
+      auth: getAuth(),
+      db: getFirestore(),
     },
     User: null,
+    Models: {
+      rated: [],
+      currentList: [],
+    },
   },
   mutations: {
     setUser: (state: State, user: User | null) => {
       state.User = user
+    },
+    setRatedModels: (state: State, models: Array<IModel>) => {
+      state.Models.rated = models
+    },
+    setCurrentModels: (state: State, models: Array<IModel>) => {
+      state.Models.currentList = models
+    },
+    addCurrentModels: (state: State, models: Array<IModel>) => {
+      state.Models.currentList.push(...models)
     },
   },
   actions: {

@@ -3,11 +3,12 @@
   padding: 0
   box-sizing: border-box
 
+$mainColor: #C5CAE9
+$mainFontColor: #58f
 $lightgrey: #88a
-$lightblue: #58f
 
-=shadow
-  box-shadow: 1px 1px 5px 0 lightgrey
+=shadow($color: grey)
+  box-shadow: 1px 1px 5px 0 $color
 
 =chip
   padding: 0.3em 1em
@@ -15,3 +16,11 @@ $lightblue: #58f
   background-color: #9cd
   color: #fef
   cursor: pointer
+
+=input
+  border: none
+  +shadow
+  border-radius: 2em
+
+  &:focus
+    +shadow(lightblue)

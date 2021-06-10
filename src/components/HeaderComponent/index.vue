@@ -2,7 +2,7 @@
   <div class="header">
     <img
       class="header__logo"
-      :src="imgLogo"
+      src="./assets/logo.gif"
       alt=""
       @click="$router.push('/')"
     />
@@ -10,27 +10,47 @@
       <CustomDropdown
         class="header-toolbox__auth"
         v-if="user === null"
-        imgTitle="/assets/img/account_white.svg"
-        textTitle="Sign in"
-        :openOnHover="true"
-        :action="auth"
-        :items="itemsAuth"
-      />
-      <div
-        class="header-toolbox__auth-complete"
-        v-else
+        openOnHover
       >
-        <img
-          class="header-toolbox__auth-complete__img"
-          :src="user.photoURL"
-          alt=""
-        />
-        <span
-          class="header-toolbox__auth-complete__text"
-        >
+        <template v-slot:title>
+          <img src="./assets/account_white.svg" alt="&nbsp;" />
+          Sign in
+        </template>
+        <template v-slot:items>
+          <div
+            class="dropdown-item"
+            @click="auth('google')"
+          >
+            <img src="./assets/google_white.svg" alt="&nbsp;" />
+            Google
+          </div>
+          <div
+            class="dropdown-item"
+            @click="auth('github')"
+          >
+            <img src="./assets/github_white.svg" alt="&nbsp;" />
+            GitHub
+          </div>
+        </template>
+      </CustomDropdown>
+      <CustomDropdown
+        class="header-toolbox__auth-complete"
+        v-if="user !== null"
+      >
+        <template v-slot:title>
+          <img :src="user.photoURL" alt="" />
           {{ user.displayName }}
-        </span>
-      </div>
+        </template>
+        <template v-slot:items>
+          <div
+            class="dropdown-item"
+            @click="logout"
+          >
+            <img src="./assets/logout_white.svg" alt="" />
+            Logout
+          </div>
+        </template>
+      </CustomDropdown>
     </div>
   </div>
 </template>
@@ -41,14 +61,13 @@ import { useStore } from '@/store'
 
 import {
   getAuth,
+  UserCredential,
+  OAuthCredential,
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
   browserLocalPersistence
-
 } from 'firebase/auth'
-
-import { IAuthItem } from '@/types'
 
 import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
@@ -60,25 +79,9 @@ export default defineComponent({
   setup () {
     const store = useStore()
 
-    const itemsAuth: IAuthItem[] = [
-      {
-        type: 'google',
-        name: 'Google',
-        imgSrc: '/assets/img/google_white.svg',
-      },
-      {
-        type: 'github',
-        name: 'GitHub',
-        imgSrc: '/assets/img/github_white.svg',
-      }
-    ]
-
-    const auth = (item: IAuthItem) => {
-      const auth = getAuth(store.state.Firebase.app)
-      auth.useDeviceLanguage()
-      auth.setPersistence(browserLocalPersistence)
-      const getProvider = (): GoogleAuthProvider | GithubAuthProvider => {
-        switch (item.type) {
+    const getProvider =
+      (providerName: string): GoogleAuthProvider | GithubAuthProvider => {
+        switch (providerName) {
           case 'google': {
             const provider: GoogleAuthProvider = new GoogleAuthProvider()
             provider.addScope('profile')
@@ -94,21 +97,39 @@ export default defineComponent({
             provider.addScope('user:email')
             return provider
           }
-          default: throw new Error('Invalid auth provider type!')
+          default: throw new Error('Invalid auth provider name!')
         }
       }
-      const provider: GoogleAuthProvider | GithubAuthProvider = getProvider()
-      const isGoogle = typeof provider === typeof GoogleAuthProvider
-      signInWithPopup(auth, getProvider())
-        .then(userCredential => {
+    const getCredentialStr =
+      (userCredential: UserCredential, providerName: string): string => {
+        let credential: OAuthCredential = {} as OAuthCredential
+        switch (providerName) {
+          case 'google': {
+            credential = GoogleAuthProvider
+              .credentialFromResult(userCredential)!
+            break
+          }
+          case 'github': {
+            credential = GithubAuthProvider
+              .credentialFromResult(userCredential)!
+            break
+          }
+          default:
+            throw new Error('Invalid auth provider name!')
+        }
+        return JSON.stringify(credential)
+      }
+    const auth = (providerName: string) => {
+      const auth = getAuth(store.state.Firebase.app)
+      auth.useDeviceLanguage()
+      auth.setPersistence(browserLocalPersistence)
+
+      signInWithPopup(auth, getProvider(providerName))
+        .then((userCredential: UserCredential) => {
           store.commit('setUser', userCredential.user)
           localStorage.setItem(
             'authCredential',
-            JSON.stringify(
-              isGoogle
-                ? GoogleAuthProvider.credentialFromResult(userCredential)!
-                : GithubAuthProvider.credentialFromResult(userCredential)!
-            )
+            getCredentialStr(userCredential, providerName)
           )
           localStorage.setItem('userInfo', JSON.stringify(userCredential.user))
         })
@@ -118,9 +139,7 @@ export default defineComponent({
     }
 
     return {
-      imgLogo: store.state.imgLogo,
       user: computed(() => store.state.User),
-      itemsAuth,
       auth,
     }
   },
@@ -138,7 +157,7 @@ $color: white
   flex-flow: row nowrap
   justify-content: space-between
 
-  background-color: #C5CAE9
+  background-color: $mainColor
   padding: 0.5em
 
   &__logo

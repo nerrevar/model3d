@@ -8,14 +8,14 @@
       <div class="sidebar-title">
         <img
           class="sidebar-title__logo"
-          :src="imgLogo"
+          src="./assets/logo.gif"
           :title="host"
           @click.stop="$router.push('/')"
         />
         <img
           class="sidebar-title__close-button"
           @click.stop="setSidebarOpened(false)"
-          :src="imgClose"
+          src="./assets/close.svg"
           alt="X"
         />
       </div>
@@ -80,23 +80,23 @@ export default defineComponent({
       default: () => [],
     },
   },
-  setup (props) {
+  setup (_) {
     const router = useRouter()
 
     const isSidebarOpened = ref(false)
 
-    const getIcon = (path: string): string | undefined => {
+    const getIcon = (path: string): any => {
       switch (path) {
-        case '/': return '/assets/img/home_white.svg'
-        case '/about': return '/assets/img/info_white.svg'
+        case '/': return require('./assets/home_white.svg')
+        case '/about': return require('./assets/info_white.svg')
         default: return undefined
       }
     }
     const getSidebarItems = () => {
-      if (props.items === undefined)
+      if (_.items === undefined)
         return router.options.routes
           .filter(
-            (r: RouteRecordRaw) => ['/:pathMatch(.*)*', ...props.pathFilters]
+            (r: RouteRecordRaw) => ['/:pathMatch(.*)*', ..._.pathFilters]
               .indexOf(r.path) === -1
           )
           .map((r: RouteRecordRaw): ISidebarItem => {
@@ -107,7 +107,7 @@ export default defineComponent({
             }
           })
       else
-        return props.items
+        return _.items
     }
 
     return {
@@ -149,14 +149,14 @@ $itemBackground: lighten($sidebarBackground, 3)
     justify-content: space-between
 
     &__logo
-      height: 32px
+      height: 35px
       object-fit: contain
 
       cursor: pointer
 
     &__close
-      width: 32px
-      height: 32px
+      width: 35px
+      height: 35px
       object-fit: contain
       border-radius: 50%
 
@@ -196,6 +196,7 @@ $itemBackground: lighten($sidebarBackground, 3)
     padding-top: 48px
     padding-right: 4px
     color: white
+    +shadow
 
     cursor: pointer
 </style>

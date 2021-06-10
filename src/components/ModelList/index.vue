@@ -139,7 +139,7 @@ export default defineComponent({
 
   &__title
     padding: 0.5em 0
-    color: $lightblue
+    color: $mainFontColor
     font-weight: 800
 
   &-rating
@@ -179,7 +179,7 @@ export default defineComponent({
     font-size: 0.8em
 
     &__author
-      color: $lightblue
+      color: $mainFontColor
       font-size: 1rem
       font-weight: 800
 </style>

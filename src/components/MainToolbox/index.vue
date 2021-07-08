@@ -55,13 +55,15 @@
 <script lang="ts">
 import { defineComponent, ref, computed, watch, inject } from 'vue'
 
-import CustomDropdown from '@/components/CustomDropdown/index'
+import { ISortType, ILayoutType } from '@/types'
+
+import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
 export default defineComponent({
   name: 'MainToolbox',
   components: { CustomDropdown },
   setup () {
-    const sortTypes = [
+    const sortTypes: ISortType[] = [
       {
         name: 'ratingDesc',
         text: 'Rating desc',
@@ -77,10 +79,10 @@ export default defineComponent({
     const otherSorts = computed(
       () => sortTypes.filter(type => type.name !== currentSort.value.name)
     )
-    const updateSort = inject('updateSort', () => null)
+    const updateSort = inject('updateSort', (val: ISortType) => val)
     watch(() => currentSort.value, val => updateSort(val))
 
-    const layoutTypes = [
+    const layoutTypes: ILayoutType[] = [
       {
         name: 'layoutList',
         img: require('./assets/view-list_white.svg'),
@@ -94,11 +96,11 @@ export default defineComponent({
     const otherLayouts = computed(
       () => layoutTypes.filter(type => type.name !== currentLayout.value.name)
     )
-    const updateLayout = inject('updateLayout', () => null)
+    const updateLayout = inject('updateLayout', (val: ILayoutType) => val)
     watch(() => currentLayout.value, val => updateLayout(val))
 
     const searchText = ref('')
-    const setSearchText = inject('setSearchText', () => null)
+    const setSearchText = inject('setSearchText', (val: string) => val)
     const search = () => setSearchText(searchText.value)
 
     return {

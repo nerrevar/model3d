@@ -135,6 +135,7 @@ $itemBackground: lighten($sidebarBackground, 3)
 
 .sidebar
   position: fixed
+  z-index: 150
   top: 0
   bottom: 0
   left: 0
@@ -184,6 +185,7 @@ $itemBackground: lighten($sidebarBackground, 3)
 
   &-open-button
     position: fixed
+    z-index: 150
     top: calc(50vh - 64px)
     bottom: calc(50vh - 64px)
     left: -32px

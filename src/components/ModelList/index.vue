@@ -7,6 +7,13 @@
       }
     ]"
   >
+    <PreviewModal
+      v-if="previewUrl"
+      :url="previewUrl"
+      :name="previewName"
+      :clickPosition="clickPosition"
+      @close="previewUrl = ''"
+    />
     <div
       :class="[
         'model',
@@ -17,6 +24,7 @@
       ]"
       v-for="(model, index) in models"
       :key="index"
+      @click="openPreview($event, model.url, model.title)"
     >
       <img
         class="model__img"
@@ -76,8 +84,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, ref, computed, reactive } from 'vue'
 import { useStore } from '@/store'
+
+import { IClickPosition } from '@/types'
+
+import PreviewModal from '@/components/PreviewModal/index.vue'
 
 export default defineComponent({
   name: 'ModelList',
@@ -91,6 +103,9 @@ export default defineComponent({
       default: false,
     },
   },
+  components: {
+    PreviewModal,
+  },
   setup (_) {
     const store = useStore()
 
@@ -100,10 +115,35 @@ export default defineComponent({
         : store.state.Models.currentList
     )
 
+    const previewUrl = ref('')
+    const previewName = ref('')
+    const clickPosition = reactive<IClickPosition>({
+      x: 0,
+      y: 0,
+      clientY: 0,
+      clientX: 0,
+    })
+    const openPreview = (
+      { pageX, pageY, clientX, clientY }: MouseEvent,
+      modelUrl: string,
+      modelName: string
+    ) => {
+      previewUrl.value = modelUrl
+      previewName.value = modelName
+      clickPosition.x = pageX
+      clickPosition.y = pageY
+      clickPosition.clientX = clientX
+      clickPosition.clientY = clientY
+    }
+
     const ratingScaleSize = 5 // TODO: get from store
     return {
       models,
       ratingScaleSize,
+      previewUrl,
+      previewName,
+      clickPosition,
+      openPreview,
     }
   },
 })
@@ -127,6 +167,8 @@ export default defineComponent({
   display: flex
   flex-flow: column nowrap
   justify-content: space-between
+
+  cursor: pointer
 
   &_is-short
     width: 350px

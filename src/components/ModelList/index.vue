@@ -24,9 +24,9 @@
       ]"
       v-for="(model, index) in models"
       :key="index"
-      @click="openPreview($event, model.url, model.title)"
+      @click="openPreview(model.url, model.title)"
     >
-      <img
+      <FirebaseImg
         class="model__img"
         :src="model.img.src"
         :alt="model.img.alt"
@@ -84,12 +84,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, reactive } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import { useStore } from '@/store'
 
-import { IClickPosition } from '@/types'
+import { ref as storageRef, getDownloadURL } from 'firebase/storage'
 
 import PreviewModal from '@/components/PreviewModal/index.vue'
+import FirebaseImg from '@/components/FirebaseImg.vue'
 
 export default defineComponent({
   name: 'ModelList',
@@ -105,9 +106,13 @@ export default defineComponent({
   },
   components: {
     PreviewModal,
+    FirebaseImg,
   },
   setup (_) {
     const store = useStore()
+
+    const getSrc = async (url: string) =>
+      await getDownloadURL(storageRef(store.state.Firebase.storage, url))
 
     const models = computed(
       () => _.isRated
@@ -117,33 +122,24 @@ export default defineComponent({
 
     const previewUrl = ref('')
     const previewName = ref('')
-    const clickPosition = reactive<IClickPosition>({
-      x: 0,
-      y: 0,
-      clientY: 0,
-      clientX: 0,
-    })
     const openPreview = (
-      { pageX, pageY, clientX, clientY }: MouseEvent,
       modelUrl: string,
       modelName: string
     ) => {
-      previewUrl.value = modelUrl
+      getDownloadURL(storageRef(store.state.Firebase.storage, modelUrl))
+        .then((url: string) => previewUrl.value = url)
       previewName.value = modelName
-      clickPosition.x = pageX
-      clickPosition.y = pageY
-      clickPosition.clientX = clientX
-      clickPosition.clientY = clientY
     }
 
     const ratingScaleSize = 5 // TODO: get from store
+
     return {
       models,
       ratingScaleSize,
       previewUrl,
       previewName,
-      clickPosition,
       openPreview,
+      getSrc,
     }
   },
 })

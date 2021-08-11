@@ -59,7 +59,7 @@ $color: white
   white-space: nowrap
   +shadow
 
-  &-title, &-item
+  &-title, &__items > *
     padding: 0.5em 1.5em !important
     line-height: 1.2em
     display: flex
@@ -76,11 +76,10 @@ $color: white
 
   &__items
     position: absolute
-    margin-top: -5px
 
-  &-item
-    background-color: $itemBackground
+    & > *
+      background-color: $itemBackground
 
-    &:hover
-      background-color: lighten($itemBackground, 3)
+      &:hover
+        background-color: lighten($itemBackground, 3)
 </style>

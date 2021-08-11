@@ -1,6 +1,7 @@
 import { FirebaseApp } from 'firebase/app'
 import { FirebaseAuth, User } from 'firebase/auth'
 import { FirebaseFirestore } from 'firebase/firestore'
+import { FirebaseStorage } from 'firebase/storage'
 
 import { IModel } from './Model'
 
@@ -20,6 +21,7 @@ export interface State {
     app: FirebaseApp,
     auth: FirebaseAuth,
     db: FirebaseFirestore,
+    storage: FirebaseStorage,
   },
   User: User | null,
   Models: {

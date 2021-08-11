@@ -4,7 +4,10 @@
       class="overlay"
       @click.stop="$emit('close')"
     >
-      <div class="preview">
+      <div
+        class="preview"
+        @click.stop="() => null"
+      >
         <div class="preview-header">
           <span class="preview-header__name">{{ name }}</span>
           <img
@@ -13,6 +16,22 @@
             alt="X"
             @click.stop="$emit('close')"
           />
+        </div>
+        <div class="preview-settings">
+          <CustomDropdown class="preview-settings__light">
+            <template v-slot:title>
+              {{ light }}
+            </template>
+            <template v-slot:items>
+              <div
+                v-for="(item, index) in Object.keys(lights)"
+                :key="index"
+                @click.stop="light = item"
+              >
+                {{ item }}
+              </div>
+            </template>
+          </CustomDropdown>
         </div>
         <div class="preview__preview">
           <div id="preview-model" />
@@ -26,15 +45,12 @@
 import { defineComponent, ref, onMounted, watch } from 'vue'
 
 import * as three from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-import {
-  getStorage,
-  ref as firebaseRef,
-  getDownloadURL
-} from 'firebase/storage'
+import { ILights } from '@/types'
 
-import { IClickPosition, ISize } from '@/types'
+import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
 export default defineComponent({
   name: 'PreviewModal',
@@ -47,64 +63,86 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    clickPosition: {
-      type: Object as () => IClickPosition,
-      required: true,
-    },
   },
   emits: ['close'],
+  components: { CustomDropdown },
   setup (_) {
-    const storage = getStorage()
-
     const renderer = new three.WebGLRenderer({ antialias: true })
     const scene = new three.Scene()
 
-    let camera = new three.PerspectiveCamera(75, 16 / 9, 0.01, 200)
+    const camera = new three.PerspectiveCamera(75, 16 / 9, 0.01, 200)
+    camera.position.x = -1
+    camera.position.z = 1
     camera.lookAt(scene.position)
     scene.add(camera)
 
-    const light = new three.DirectionalLight(0xffffff, 1)
-    light.position.set(10, -3, 80)
-    scene.add(light)
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.autoRotate = true
 
-    const windowSize = ref<ISize>({
-      width: 0,
-      height: 0,
-    })
+    const directionalLight = new three.DirectionalLight(0xffffff, 1)
+    directionalLight.position.set(0, -80, 0)
+
+    const hemisphereLight = new three.HemisphereLight(0xffffff, 0xffffff, 1)
+
+    const spotLight = new three.SpotLight(0xffffff)
+    spotLight.position.set(0, -80, 0)
+
+    const ambientLight = new three.AmbientLight(0xffffff)
+    scene.add(ambientLight)
+
+    const lights: ILights = {
+      directionalLight,
+      hemisphereLight,
+      spotLight,
+      ambientLight,
+    }
+
+    const light = ref('ambientLight')
     watch(
-      () => windowSize.value,
-      (val: ISize) => {
-        renderer.setSize(val.width, val.height)
+      () => light.value,
+      (val: string, oldVal: string) => {
+        scene.remove(lights[oldVal])
+        scene.add(lights[val])
+      }
+    )
+
+    watch(
+      () => [window.innerWidth, window.innerHeight],
+      val => {
+        // TODO: fix canvas size on window resize
+        renderer.setSize(
+          document.getElementById('preview-model')?.offsetWidth || 0,
+          document.getElementById('preview-model')?.offsetWidth || 0
+        )
       }
     )
 
     const animate = () => {
       renderer.render(scene, camera)
+      controls.update()
       requestAnimationFrame(animate)
     }
 
     onMounted(async () => {
-      windowSize.value = {
-        width: window.innerWidth - 200,
-        height: window.innerHeight - 130,
-      }
       renderer.setPixelRatio(window.devicePixelRatio)
 
       const loader = new GLTFLoader()
-      fetch(`https://storage.googleapis.com/model-catalog-303814/${_.url}`)
-        .then((res: Response) => res.json())
-        .then(data => {
-          loader.parse(
-            data,
-            './',
-            modelObj => {
-              scene.add(modelObj.scene)
-            },
-          )
-        })
+      loader.load(_.url, gltf => scene.add(gltf.scene))
+
+      const rendererParentNode = document.getElementById('preview-model')
+      renderer.setSize(
+        rendererParentNode!.offsetWidth,
+        rendererParentNode!.offsetHeight
+      )
+      rendererParentNode!.appendChild(renderer.domElement)
 
       requestAnimationFrame(animate)
     })
+
+    return {
+      light,
+      lights,
+    }
   },
 })
 </script>
@@ -138,4 +176,20 @@ export default defineComponent({
 
       color: white
       text-align: center
+
+  &-settings
+    display: flex
+    flex-flow: row wrap
+    justify-content: flex-start
+
+  &__preview
+    width: 100%
+    height: 100%
+
+#preview-model
+  width: 100%
+  height: 100%
+
+  display: flex
+  justify-content: center
 </style>

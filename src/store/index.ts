@@ -6,6 +6,7 @@ import { initializeApp } from 'firebase/app'
 import { State, IFirebaseConfig, IModel } from '@/types'
 import { User, getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
+import { getStorage } from 'firebase/storage'
 
 const firebaseConfig: IFirebaseConfig = {
   apiKey: 'AIzaSyBoOuFaBPdtbqG_Stx6_Zq5nGDFdfHe75g',
@@ -24,6 +25,7 @@ export const store = createStore<State>({
       app: initializeApp(firebaseConfig),
       auth: getAuth(),
       db: getFirestore(),
+      storage: getStorage(),
     },
     User: null,
     Models: {

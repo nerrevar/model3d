@@ -13,22 +13,34 @@
         openOnHover
       >
         <template v-slot:title>
-          <img src="./assets/account_white.svg" alt="&nbsp;" />
+          <Icon
+            class="iconify"
+            icon="mdi:account"
+            color="white"
+          />
           Sign in
         </template>
         <template v-slot:items>
           <div
             class="dropdown-item"
-            @click="auth('google')"
+            @click="authenticate('google')"
           >
-            <img src="./assets/google_white.svg" alt="&nbsp;" />
+            <Icon
+              class="iconify"
+              icon="mdi:google"
+              color="white"
+            />
             Google
           </div>
           <div
             class="dropdown-item"
-            @click="auth('github')"
+            @click="authenticate('github')"
           >
-            <img src="./assets/github_white.svg" alt="&nbsp;" />
+            <Icon
+              class="iconify"
+              icon="mdi:github"
+              color="white"
+            />
             GitHub
           </div>
         </template>
@@ -38,7 +50,17 @@
         v-if="user !== null"
       >
         <template v-slot:title>
-          <img :src="user.photoURL" alt="" />
+          <img
+            v-if="!!user.photoURL"
+            :src="user.photoURL"
+            alt=""
+          />
+          <Icon
+            v-else
+            class="iconify"
+            icon="mdi:account"
+            color="white"
+          />
           {{ user.displayName }}
         </template>
         <template v-slot:items>
@@ -46,7 +68,11 @@
             class="dropdown-item"
             @click="logout"
           >
-            <img src="./assets/logout_white.svg" alt="" />
+            <Icon
+              class="iconify"
+              icon="mdi:logout"
+              color="white"
+            />
             Logout
           </div>
         </template>
@@ -58,6 +84,8 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from '@/store'
+
+import { Icon } from '@iconify/vue'
 
 import {
   getAuth,
@@ -75,6 +103,7 @@ export default defineComponent({
   name: 'HeaderComponent',
   components: {
     CustomDropdown,
+    Icon,
   },
   setup () {
     const store = useStore()
@@ -119,11 +148,12 @@ export default defineComponent({
         }
         return JSON.stringify(credential)
       }
-    const auth = (providerName: string) => {
-      const auth = getAuth(store.state.Firebase.app)
-      auth.useDeviceLanguage()
-      auth.setPersistence(browserLocalPersistence)
 
+    const auth = getAuth(store.state.Firebase.app)
+    auth.useDeviceLanguage()
+    auth.setPersistence(browserLocalPersistence)
+
+    const authenticate = (providerName: string) =>
       signInWithPopup(auth, getProvider(providerName))
         .then((userCredential: UserCredential) => {
           store.commit('setUser', userCredential.user)
@@ -136,11 +166,10 @@ export default defineComponent({
         .catch(error => {
           console.log(`Auth error ${error.code}: ${error.message}`)
         })
-    }
 
     return {
       user: computed(() => store.state.User),
-      auth,
+      authenticate,
     }
   },
 })
@@ -149,8 +178,6 @@ export default defineComponent({
 <style lang="sass" scoped>
 $titleBackground: #CE93D8
 $color: white
-=shadow
-  box-shadow: 1px 1px 5px grey
 
 .header
   display: flex
@@ -170,13 +197,17 @@ $color: white
 
     height: 2.2em
 
+    & svg
+      font-size: 24px
+      margin-right: 14px
+
     &__auth-complete
       display: flex
       flex: 0 0
       padding: 0.3em
       background-color: $titleBackground
       color: $color
-      +shadow
+      +shadow(grey)
 
       &__img
         margin-right: 1em

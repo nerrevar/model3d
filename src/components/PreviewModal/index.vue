@@ -10,10 +10,10 @@
       >
         <div class="preview-header">
           <span class="preview-header__name">{{ name }}</span>
-          <img
+          <Icon
+            icon="mdi:close"
+            color="white"
             class="preview-header__close"
-            src="./assets/close_white.svg"
-            alt="X"
             @click.stop="$emit('close')"
           />
         </div>
@@ -43,6 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue'
+import { Icon } from '@iconify/vue'
 
 import * as three from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -65,7 +66,10 @@ export default defineComponent({
     },
   },
   emits: ['close'],
-  components: { CustomDropdown },
+  components: {
+    CustomDropdown,
+    Icon,
+  },
   setup (_) {
     const renderer = new three.WebGLRenderer({ antialias: true })
     const scene = new three.Scene()

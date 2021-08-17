@@ -59,6 +59,9 @@ $color: white
   white-space: nowrap
   +shadow
 
+  &-title
+    height: 100%
+
   &-title, &__items > *
     padding: 0.5em 1.5em !important
     line-height: 1.2em

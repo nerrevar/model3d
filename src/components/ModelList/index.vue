@@ -39,27 +39,27 @@
           {{ model.rating.toFixed(2) }}/{{ ratingScaleSize }}
         </span>
         <div class="model-rating__stars">
-          <img
-            class="model-rating__star model-rating__star_full"
+          <Icon
             v-for="fullIndex in Array(Math.floor(model.rating))"
             :key="`starFull${fullIndex}`"
-            src="~@mdi/svg/svg/star.svg"
-            alt=''
+            icon="mdi:star"
+            color="#ffea00"
+            class="iconify model-rating__star model-rating__star_full"
           />
-          <img
-            class="model-rating__star model-rating__star_half"
+          <Icon
             v-if="model.rating % 1 > 0.5"
-            src="~@mdi/svg/svg/star-half.svg"
-            alt=''
+            icon="mdi:star-half"
+            color="#ffea00"
+            class="model-rating__star model-rating__star_half"
           />
-          <img
-            class="model-rating__star model-rating__star_empty"
+          <Icon
             v-for="emptyIndex in Array(
-              Math.floor(ratingScaleSize - model.rating)
+              Math.floor(ratingScaleSize - model.rating + 0.5)
             )"
             :key="`starEmpty${emptyIndex}`"
-            src="~@mdi/svg/svg/star.svg"
-            alt=''
+            icon="mdi:star"
+            color="#757575"
+            class="model-rating__star model-rating__star_empty"
           />
         </div>
       </div>
@@ -92,6 +92,8 @@ import { ref as storageRef, getDownloadURL } from 'firebase/storage'
 import PreviewModal from '@/components/PreviewModal/index.vue'
 import FirebaseImg from '@/components/FirebaseImg.vue'
 
+import { Icon } from '@iconify/vue'
+
 export default defineComponent({
   name: 'ModelList',
   props: {
@@ -107,6 +109,7 @@ export default defineComponent({
   components: {
     PreviewModal,
     FirebaseImg,
+    Icon,
   },
   setup (_) {
     const store = useStore()
@@ -193,10 +196,11 @@ export default defineComponent({
       padding-right: 0.5em
 
     &__star
-      filter: invert(75%)
+      font-size: 24px
 
-      &_full, &_half
-        filter: invert(50%) hue-rotate(60deg) saturate(200%)
+      &_half
+        background-color: #757575
+        clip-path: path("M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z")
 
   &__description
     padding: 0.5em 0

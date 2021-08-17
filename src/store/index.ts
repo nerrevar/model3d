@@ -9,12 +9,12 @@ import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig: IFirebaseConfig = {
-  apiKey: 'AIzaSyBoOuFaBPdtbqG_Stx6_Zq5nGDFdfHe75g',
+  apiKey: 'AIzaSyBplaQdF1Nr4xuG9pV_BjIjkckfuIwBKkg',
   authDomain: 'model-catalog-303814.firebaseapp.com',
   projectId: 'model-catalog-303814',
   storageBucket: 'model-catalog-303814.appspot.com',
   messagingSenderId: '712573757834',
-  appId: '1:712573757834:web:d969e1bce947165c624073',
+  appId: '1:712573757834:web:0481e2d581c867be624073',
 }
 
 export const store = createStore<State>({
@@ -48,6 +48,9 @@ export const store = createStore<State>({
     },
   },
   actions: {
+  },
+  getters: {
+    isAuthenticated: (state: State) => state.User !== null,
   },
   modules: {
   },

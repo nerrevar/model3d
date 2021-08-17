@@ -5,7 +5,11 @@
       openOnHover
     >
       <template v-slot:title class="dropdown-title">
-        <img :src="currentSort.img" alt="" />
+        <Icon
+          class="iconify"
+          :icon="`mdi:${currentSort.img}`"
+          color="white"
+        />
         {{ currentSort.text }}
       </template>
       <template v-slot:items>
@@ -15,7 +19,11 @@
           :key="sort.name"
           @click="currentSort = sort"
         >
-          <img :src="sort.img" alt="" />
+          <Icon
+            class="iconify"
+            :icon="`mdi:${sort.img}`"
+            color="white"
+          />
           {{ sort.text }}
         </div>
       </template>
@@ -28,14 +36,22 @@
           placeholder="Search..."
           @update="search"
         />
-        <img src="./assets/search.svg" alt="" />
+        <Icon
+          class="iconify"
+          icon="mdi:search"
+          color="#757575"
+        />
       </div>
       <CustomDropdown
         class="toolbox__switch-layout"
         openOnHover
       >
         <template v-slot:title>
-          <img :src="currentLayout.img" alt="" />
+          <Icon
+            class="iconify"
+            :icon="`mdi:${currentLayout.img}`"
+            color="white"
+          />
         </template>
         <template v-slot:items>
           <div
@@ -44,7 +60,11 @@
             :key="layout.name"
             @click="currentLayout = layout"
           >
-            <img :src="layout.img" alt="" />
+            <Icon
+              class="iconify"
+              :icon="`mdi:${layout.img}`"
+              color="white"
+            />
           </div>
         </template>
       </CustomDropdown>
@@ -54,6 +74,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, inject } from 'vue'
+import { Icon } from '@iconify/vue'
 
 import { ISortType, ILayoutType } from '@/types'
 
@@ -61,18 +82,21 @@ import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
 export default defineComponent({
   name: 'MainToolbox',
-  components: { CustomDropdown },
+  components: {
+    CustomDropdown,
+    Icon,
+  },
   setup () {
     const sortTypes: ISortType[] = [
       {
         name: 'ratingDesc',
         text: 'Rating desc',
-        img: require('./assets/sort-variant_white.svg'),
+        img: 'sort-variant',
       },
       {
         name: 'ratingAsc',
         text: 'Rating asc',
-        img: require('./assets/sort-reverse-variant_white.svg'),
+        img: 'sort-reverse-variant',
       }
     ]
     const currentSort = ref(sortTypes[0])
@@ -85,11 +109,11 @@ export default defineComponent({
     const layoutTypes: ILayoutType[] = [
       {
         name: 'layoutList',
-        img: require('./assets/view-list_white.svg'),
+        img: 'view-list',
       },
       {
         name: 'layoutModule',
-        img: require('./assets/view-module_white.svg'),
+        img: 'view-module',
       }
     ]
     const currentLayout = ref(layoutTypes[0])
@@ -135,13 +159,14 @@ export default defineComponent({
 
   &__search
     display: flex
+    align-items: center
     margin-right: 5em
 
     input
       +input
       padding: 0.5em 1.5em
 
-    img
+    svg
       margin-left: -28px
 
   &__switch-layout

@@ -12,11 +12,11 @@
           :title="host"
           @click.stop="$router.push('/')"
         />
-        <img
+        <Icon
+          icon="mdi:close"
+          color="black"
           class="sidebar-title__close-button"
           @click.stop="setSidebarOpened(false)"
-          src="./assets/close.svg"
-          alt="X"
         />
       </div>
       <div
@@ -25,20 +25,20 @@
         :key="index"
         @click="item.action ? item.action : null"
       >
-        <img
+        <Icon
           class="sidebar-item__prepend-icon"
           v-if="item.imgSrcPrependIcon"
-          :src="item.imgSrcPrependIcon"
-          alt="&nbsp;"
+          :icon="`mdi:${item.imgSrcPrependIcon}`"
+          color="white"
         />
         <span class="sidebar-item__text">
           {{ item.text }}
         </span>
-        <img
+        <Icon
           class="sidebar-item__append-icon"
           v-if="item.imgSrcAppendIcon"
-          :src="item.imgSrcAppendIcon"
-          alt=""
+          :icon="`mdi:${item.imgSrcAppendIcon}`"
+          color="white"
         />
       </div>
     </div>
@@ -55,6 +55,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useRouter, RouteRecordRaw } from 'vue-router'
+import { Icon } from '@iconify/vue'
 
 import { ISidebarItem } from './index'
 
@@ -64,11 +65,6 @@ export default defineComponent({
     imgLogo: {
       type: String,
       required: true,
-    },
-    imgClose: {
-      type: String,
-      required: false,
-      default: '/assets/img/close.svg',
     },
     items: {
       type: Array as () => Array<ISidebarItem>,
@@ -80,6 +76,7 @@ export default defineComponent({
       default: () => [],
     },
   },
+  components: { Icon },
   setup (_) {
     const router = useRouter()
 
@@ -87,8 +84,8 @@ export default defineComponent({
 
     const getIcon = (path: string): any => {
       switch (path) {
-        case '/': return require('./assets/home_white.svg')
-        case '/about': return require('./assets/info_white.svg')
+        case '/': return 'home'
+        case '/about': return 'info'
         default: return undefined
       }
     }
@@ -134,7 +131,7 @@ $itemBackground: lighten($sidebarBackground, 3)
   background-color: rgba(128, 128, 128, 0.4)
 
 .sidebar
-  position: fixed
+  position: absolute
   z-index: 150
   top: 0
   bottom: 0
@@ -166,6 +163,7 @@ $itemBackground: lighten($sidebarBackground, 3)
   &-item
     padding: 8px
     display: flex
+    align-items: center
     background-color: $itemBackground
 
     cursor: pointer

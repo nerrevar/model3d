@@ -1,16 +1,16 @@
 <template>
   <div class="header">
     <img
-      class="header__logo"
-      src="./assets/logo.gif"
+      class="header__logo logo"
+      src="@/assets/img/logo.gif"
       alt=""
       @click="$router.push('/')"
     />
     <div class="header-toolbox">
       <CustomDropdown
-        class="header-toolbox__auth"
-        v-if="user === null"
+        v-if="!isAuthenticated"
         openOnHover
+        class="header-toolbox__auth"
       >
         <template v-slot:title>
           <Icon
@@ -46,8 +46,8 @@
         </template>
       </CustomDropdown>
       <CustomDropdown
+        v-else
         class="header-toolbox__auth-complete"
-        v-if="user !== null"
       >
         <template v-slot:title>
           <img
@@ -77,6 +77,18 @@
           </div>
         </template>
       </CustomDropdown>
+
+      <div
+        v-if="isAuthenticated"
+        class="header-toolbox__add-model-button"
+        @click="$router.push('/add')"
+      >
+        <Icon
+          icon="mdi:plus"
+          color="white"
+        />
+        Add model
+      </div>
     </div>
   </div>
 </template>
@@ -86,16 +98,6 @@ import { defineComponent, computed } from 'vue'
 import { useStore } from '@/store'
 
 import { Icon } from '@iconify/vue'
-
-import {
-  getAuth,
-  UserCredential,
-  OAuthCredential,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-  browserLocalPersistence
-} from 'firebase/auth'
 
 import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
@@ -108,68 +110,12 @@ export default defineComponent({
   setup () {
     const store = useStore()
 
-    const getProvider =
-      (providerName: string): GoogleAuthProvider | GithubAuthProvider => {
-        switch (providerName) {
-          case 'google': {
-            const provider: GoogleAuthProvider = new GoogleAuthProvider()
-            provider.addScope('profile')
-            provider.addScope('email')
-            return provider
-          }
-          case 'github': {
-            const provider: GithubAuthProvider = new GithubAuthProvider()
-            provider.setCustomParameters({
-              allow_signup: 'false',
-            })
-            provider.addScope('read:user')
-            provider.addScope('user:email')
-            return provider
-          }
-          default: throw new Error('Invalid auth provider name!')
-        }
-      }
-    const getCredentialStr =
-      (userCredential: UserCredential, providerName: string): string => {
-        let credential: OAuthCredential = {} as OAuthCredential
-        switch (providerName) {
-          case 'google': {
-            credential = GoogleAuthProvider
-              .credentialFromResult(userCredential)!
-            break
-          }
-          case 'github': {
-            credential = GithubAuthProvider
-              .credentialFromResult(userCredential)!
-            break
-          }
-          default:
-            throw new Error('Invalid auth provider name!')
-        }
-        return JSON.stringify(credential)
-      }
-
-    const auth = getAuth(store.state.Firebase.app)
-    auth.useDeviceLanguage()
-    auth.setPersistence(browserLocalPersistence)
-
-    const authenticate = (providerName: string) =>
-      signInWithPopup(auth, getProvider(providerName))
-        .then((userCredential: UserCredential) => {
-          store.commit('setUser', userCredential.user)
-          localStorage.setItem(
-            'authCredential',
-            getCredentialStr(userCredential, providerName)
-          )
-          localStorage.setItem('userInfo', JSON.stringify(userCredential.user))
-        })
-        .catch(error => {
-          console.log(`Auth error ${error.code}: ${error.message}`)
-        })
-
     return {
       user: computed(() => store.state.User),
-      authenticate,
+      authenticate:
+        (providerName: string) => store.dispatch('auth', providerName),
+      logout: () => store.dispatch('logout'),
+      isAuthenticated: computed(() => store.getters.isAuthenticated),
     }
   },
 })
@@ -212,4 +158,7 @@ $color: white
       &__img
         margin-right: 1em
         border-radius: 50%
+
+    &__add-model-button
+      +button(14px)
 </style>

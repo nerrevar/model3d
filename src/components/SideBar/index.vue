@@ -7,8 +7,8 @@
     <div class="sidebar">
       <div class="sidebar-title">
         <img
-          class="sidebar-title__logo"
-          src="./assets/logo.gif"
+          class="sidebar-title__logo logo"
+          src="@/assets/img/logo.gif"
           :title="host"
           @click.stop="$router.push('/')"
         />
@@ -86,6 +86,7 @@ export default defineComponent({
       switch (path) {
         case '/': return 'home'
         case '/about': return 'info'
+        case '/add': return 'plus'
         default: return undefined
       }
     }

@@ -11,7 +11,6 @@
       v-if="previewUrl"
       :url="previewUrl"
       :name="previewName"
-      :clickPosition="clickPosition"
       @close="previewUrl = ''"
     />
     <div

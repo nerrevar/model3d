@@ -11,8 +11,8 @@ import {
   // types
   User
 } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import { getFirestore, addDoc, collection } from 'firebase/firestore'
+import { getStorage, ref as storageRef, uploadBytes } from 'firebase/storage'
 
 import { getProvider } from '@/lib/auth'
 
@@ -59,6 +59,14 @@ export const store = createStore<State>({
     auth: ({ state }, providerName: string) =>
       signInWithPopup(state.Firebase.auth, getProvider(providerName)),
     logout: ({ state }) => signOut(state.Firebase.auth),
+    uploadModel: async ({ state }, { model, imageFile, modelFile }) => {
+      const imageRef = storageRef(state.Firebase.storage, model.img.src)
+      await uploadBytes(imageRef, imageFile)
+      const modelRef = storageRef(state.Firebase.storage, model.url)
+      await uploadBytes(modelRef, modelFile)
+      await addDoc(collection(state.Firebase.db, 'model'), model)
+      return true
+    },
   },
   getters: {
     isAuthenticated: (state: State) => state.User !== null,

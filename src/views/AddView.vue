@@ -36,14 +36,12 @@
       label="Image"
       accept="image/*"
       @update:value="updateImage"
-      @setValid="setValidStatus"
     />
     <FileInput
       label="Model"
       accept=".gltf,.glb"
       hint="Supported extensions: .gltf, .glb"
       @update:value="updateModel"
-      @setValid="setValidStatus"
     />
     <BaseButton
       :isDisabled="!isFormValid"
@@ -68,6 +66,8 @@ import BaseInput from '@/components/Input/BaseInput.vue'
 import FileInput from '@/components/Input/FileInput.vue'
 import BaseButton from '@/components/Input/BaseButton.vue'
 
+import { IModel } from '@/types'
+
 export default defineComponent({
   name: 'AddView',
   components: {
@@ -78,12 +78,13 @@ export default defineComponent({
   setup () {
     const store = useStore()
 
-    const model = reactive({
+    const model = reactive<IModel>({
       title: '',
       description: '',
       author: '',
+      rating: 0,
       categories: [] as string[],
-      image: {
+      img: {
         src: '',
         alt: '',
       },
@@ -99,23 +100,41 @@ export default defineComponent({
           .filter(el => !!el)
           .map(el => el.trim())
 
-    const updateImage = (file: File) => model.image = {
-      src: `image/${Date.now()}${file.name}`,
-      alt: file.name.slice(0, file.name.lastIndexOf('.')),
+    const imageRef = ref<File | null>(null)
+    const updateImage = (file: File) => {
+      model.img = {
+        src: `image/${Date.now()}${file.name}`,
+        alt: file.name.slice(0, file.name.lastIndexOf('.')),
+      }
+      imageRef.value = file
     }
 
-    const updateModel = (file: File) => model.url = `${Date.now()}${file.name}`
+    const modelRef = ref<File | null>(null)
+    const updateModel = (file: File) => {
+      model.url = `${Date.now()}${file.name}`
+      modelRef.value = file
+    }
 
     const formValidStatus = ref<{ [key: string]: boolean }>({})
     const setValidStatus = (event: { state: boolean, id: string }) =>
       formValidStatus.value[event.id] = event.state
     const isFormValid = computed(
-      () => Object
-        .keys(formValidStatus.value)
-        .every(el => formValidStatus.value[el])
+      () =>
+        Object
+          .keys(formValidStatus.value)
+          .every(el => formValidStatus.value[el]) &&
+            imageRef.value &&
+            modelRef.value
     )
 
-    const submit = () => store.dispatch('uploadModel', model)
+    const submit = () => store.dispatch(
+      'uploadModel',
+      {
+        model,
+        imageFile: imageRef.value,
+        modelFile: modelRef.value,
+      }
+    )
 
     return {
       model,

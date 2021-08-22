@@ -1,6 +1,6 @@
 <template>
   <label
-    :for="`input-${_uuid}`"
+    :for="`input-${_.uid}`"
     class="label"
   >
     {{label}}
@@ -13,7 +13,7 @@
     </span>
   </label>
   <input
-    :id="`input-${_uid}`"
+    :id="`input-${_.uid}`"
     :type="type"
     :class="{
       'input': isValid,

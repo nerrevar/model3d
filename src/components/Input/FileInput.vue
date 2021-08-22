@@ -1,6 +1,6 @@
 <template>
   <label
-    :for="`input-${type}-${date}`"
+    :for="`input-${_.uid}`"
     class="label"
   >
     {{label}}
@@ -13,7 +13,7 @@
     </span>
   </label>
   <input
-    :id="`input-${type}-${date}`"
+    :id="`input-${_.uid}`"
     class="input"
     type="file"
     :accept="accept"

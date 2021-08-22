@@ -19,7 +19,10 @@
     :accept="accept"
     :multiple="multiple"
     :value="value"
-    @change="$emit('update:value', multiple ? $event.target.files : $event.target.files[0] || {})"
+    @change="$emit(
+      'update:value',
+      multiple ? $event.target.files : $event.target.files[0] || {}
+    )"
   />
   <slot />
 </template>

@@ -8,22 +8,13 @@ import {
   getAuth,
   signInWithPopup,
   signOut,
-  GoogleAuthProvider,
-  GithubAuthProvider,
   // types
-  User,
-  UserCredential,
-  OAuthCredential,
-  AuthProvider
+  User
 } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
-import {
-  getProvider,
-  getCredentialStr,
-  getCredentialFromStorage
-} from '@/lib/auth'
+import { getProvider } from '@/lib/auth'
 
 const firebaseConfig: IFirebaseConfig = {
   apiKey: 'AIzaSyBplaQdF1Nr4xuG9pV_BjIjkckfuIwBKkg',
@@ -65,12 +56,9 @@ export const store = createStore<State>({
     },
   },
   actions: {
-    auth: ({ state, commit }, providerName: string) =>
-      signInWithPopup(state.Firebase.auth, getProvider(providerName))
-        .catch(error => {
-          console.log(`Auth error ${error.code}: ${error.message}`)
-        }),
-    logout: ({ state }) => signOut(state.Firebase.auth)
+    auth: ({ state }, providerName: string) =>
+      signInWithPopup(state.Firebase.auth, getProvider(providerName)),
+    logout: ({ state }) => signOut(state.Firebase.auth),
   },
   getters: {
     isAuthenticated: (state: State) => state.User !== null,

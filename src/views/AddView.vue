@@ -101,7 +101,7 @@ export default defineComponent({
 
     const updateImage = (file: File) => model.image = {
       src: `image/${Date.now()}${file.name}`,
-      alt: file.name.slice(0, file.name.lastIndexOf('.'))
+      alt: file.name.slice(0, file.name.lastIndexOf('.')),
     }
 
     const updateModel = (file: File) => model.url = `${Date.now()}${file.name}`
@@ -115,6 +115,8 @@ export default defineComponent({
         .every(el => formValidStatus.value[el])
     )
 
+    const submit = () => store.dispatch('uploadModel', model)
+
     return {
       model,
       assignSelf,
@@ -123,13 +125,13 @@ export default defineComponent({
       updateModel,
       setValidStatus,
       isFormValid,
+      submit,
       nonEmpty,
       lettersAndNumbers,
       letters,
       ascii,
-      formValidStatus,
     }
-  }
+  },
 })
 </script>
 

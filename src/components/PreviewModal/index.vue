@@ -112,7 +112,7 @@ export default defineComponent({
 
     watch(
       () => [window.innerWidth, window.innerHeight],
-      val => {
+      val => { // eslint-disable-line
         // TODO: fix canvas size on window resize
         renderer.setSize(
           document.getElementById('preview-model')?.offsetWidth || 0,

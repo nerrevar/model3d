@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/add',
     name: 'Add model',
-    component: () => import('@/views/AddView.vue')
+    component: () => import('@/views/AddView.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

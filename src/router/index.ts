@@ -24,7 +24,7 @@ const router = createRouter({
 })
 
 router.afterEach(
-  (from, to) => document.title = `Model 3D - ${String(to.name || 'Home')}`
+  to => document.title = `Model 3D - ${String(to.name || '')}`
 )
 
 export default router

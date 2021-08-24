@@ -7,6 +7,8 @@ import './style.sass'
 
 import { browserLocalPersistence, User } from 'firebase/auth'
 
+import Vue3Toast from '@/components/Toast'
+
 store.state.Firebase.auth.useDeviceLanguage()
 store.state.Firebase.auth.setPersistence(browserLocalPersistence)
 store.state.Firebase.auth.onAuthStateChanged(
@@ -15,4 +17,4 @@ store.state.Firebase.auth.onAuthStateChanged(
 
 document.title = 'Model 3D'
 
-createApp(App).use(store, key).use(router).mount('#app')
+createApp(App).use(store, key).use(router).use(Vue3Toast).mount('#app')

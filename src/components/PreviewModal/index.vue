@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue'
+import { defineComponent, ref, computed, watch, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 
 import * as three from 'three'
@@ -110,14 +110,17 @@ export default defineComponent({
       }
     )
 
+    const parentWidth = computed(
+      () => document.querySelector('#preview-model')?.clientWidth
+    )
+    const parentHeight = computed(
+      () => document.querySelector('#preview-model')?.clientHeight
+    )
     watch(
-      () => [window.innerWidth, window.innerHeight],
-      val => { // eslint-disable-line
-        // TODO: fix canvas size on window resize
-        renderer.setSize(
-          document.getElementById('preview-model')?.offsetWidth || 0,
-          document.getElementById('preview-model')?.offsetWidth || 0
-        )
+      () => [parentWidth.value, parentHeight.value],
+      ([w, h]) => {
+        if (w && h)
+          renderer.setSize(w, h)
       }
     )
 
@@ -146,6 +149,9 @@ export default defineComponent({
     return {
       light,
       lights,
+      // test
+      parentWidth,
+      parentHeight,
     }
   },
 })

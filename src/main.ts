@@ -3,11 +3,18 @@ import App from './App.vue'
 import router from './router'
 import { store, key } from './store'
 
+// Global prime
+import PrimeVue from 'primevue/config'
+import 'primevue/resources/primevue.min.css'
+import 'primeicons/primeicons.css'
+// Prime theme
+import 'primevue/resources/themes/saga-blue/theme.css'
+// Prime components
+import primeComponents from './prime-components'
+
 import './style.sass'
 
 import { browserLocalPersistence, User } from 'firebase/auth'
-
-import Vue3Toast from '@/components/Toast'
 
 store.state.Firebase.auth.useDeviceLanguage()
 store.state.Firebase.auth.setPersistence(browserLocalPersistence)
@@ -17,4 +24,11 @@ store.state.Firebase.auth.onAuthStateChanged(
 
 document.title = 'Model 3D'
 
-createApp(App).use(store, key).use(router).use(Vue3Toast).mount('#app')
+const app = createApp(App)
+  .use(store, key)
+  .use(router)
+  .use(PrimeVue, { ripple: true })
+
+primeComponents.forEach(el => app.component(el.name, el))
+
+app.mount('#app')

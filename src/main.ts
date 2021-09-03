@@ -12,7 +12,7 @@ import 'primevue/resources/themes/saga-blue/theme.css'
 // Prime components
 import primeComponents from './prime-components'
 
-import './style.sass'
+import './style/style.sass'
 
 import { browserLocalPersistence, User } from 'firebase/auth'
 

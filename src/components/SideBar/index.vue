@@ -98,9 +98,9 @@ const host = document.location.host
 <style lang="sass" scoped>
 .sidebar
   &-title
-    padding: 8px
     display: flex
     justify-content: space-between
+    align-items: center
 
     &__logo
       height: 35px

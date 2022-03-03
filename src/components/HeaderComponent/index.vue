@@ -1,12 +1,15 @@
 <template>
-  <div class="header">
-    <img
-      class="header__logo logo"
-      src="@/assets/img/logo.gif"
-      alt=""
-      @click="$router.push('/')"
-    />
-    <div class="header-toolbox">
+  <Toolbar class="header">
+    <template #left>
+      <img
+        class="header__logo logo"
+        src="@/assets/img/logo.gif"
+        alt=""
+        @click="$router.push('/')"
+      />
+    </template>
+
+    <template #right>
       <CustomDropdown
         v-if="!isAuthenticated"
         openOnHover
@@ -89,8 +92,8 @@
         />
         Add model
       </div>
-    </div>
-  </div>
+    </template>
+  </Toolbar>
 </template>
 
 <script lang="ts">
@@ -126,12 +129,7 @@ $titleBackground: #CE93D8
 $color: white
 
 .header
-  display: flex
-  flex-flow: row nowrap
-  justify-content: space-between
-
   background-color: $mainColor
-  padding: 0.5em
 
   &__logo
     height: 2.2em

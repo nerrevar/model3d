@@ -12,6 +12,8 @@ import 'primevue/resources/themes/saga-blue/theme.css'
 // Prime components
 import primeComponents from './prime-components'
 
+import ToastService from 'primevue/toastservice'
+
 import './style/style.sass'
 
 import { browserLocalPersistence, User } from 'firebase/auth'
@@ -28,6 +30,7 @@ const app = createApp(App)
   .use(store, key)
   .use(router)
   .use(PrimeVue, { ripple: true })
+  .use(ToastService)
 
 primeComponents.forEach(el => app.component(el.name, el))
 

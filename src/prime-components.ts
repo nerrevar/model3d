@@ -1,7 +1,11 @@
-import Sidebar from 'primevue/sidebar'
 import InputText from 'primevue/inputtext'
+import Toast from 'primevue/toast'
+import Toolbar from 'primevue/toolbar'
+import Sidebar from 'primevue/sidebar'
 
 export default [
-  Sidebar,
   InputText,
+  Toast,
+  Toolbar,
+  Sidebar,
 ]

@@ -116,13 +116,13 @@ export default defineComponent({
     const parentHeight = computed(
       () => document.querySelector('#preview-model')?.clientHeight
     )
-    watch(
-      () => [parentWidth.value, parentHeight.value],
-      ([w, h]) => {
-        if (w && h)
-          renderer.setSize(w, h)
-      }
-    )
+    // watch(
+    //   () => [parentWidth.value, parentHeight.value],
+    //   ([w, h]) => {
+    //     if (w && h)
+    //       renderer.setSize(w, h)
+    //   }
+    // )
 
     const animate = () => {
       renderer.render(scene, camera)

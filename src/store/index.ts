@@ -77,6 +77,6 @@ export const store = createStore<State>({
 
 export const key: InjectionKey<Store<State>> = Symbol('VuexStore')
 
-export function useStore () {
+export function useStore (): Store<State> {
   return baseUseStore(key)
 }

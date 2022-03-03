@@ -141,10 +141,6 @@ export default defineComponent({
         rendererParentNode!.offsetWidth,
         rendererParentNode!.offsetHeight
       )
-      if (rendererParentNode!.children.length - 1 >= 0)
-        for (let i = rendererParentNode!.children.length - 1; i >= 0; i++)
-          if (rendererParentNode!.children.item(i))
-            rendererParentNode!.removeChild(rendererParentNode!.children.item(i)!)
       rendererParentNode!.appendChild(renderer.domElement)
 
       requestAnimationFrame(animate)

@@ -4,8 +4,13 @@ import HomeView from '../views/HomeView.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'HomeView',
+    name: 'Home',
     component: HomeView,
+  },
+  {
+    path: '/add',
+    name: 'Add model',
+    component: () => import('@/views/AddView.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
@@ -17,5 +22,9 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 })
+
+router.afterEach(
+  to => document.title = `Model 3D - ${String(to.name || '')}`
+)
 
 export default router

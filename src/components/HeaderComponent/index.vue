@@ -1,54 +1,106 @@
 <template>
-  <div class="header">
-    <img
-      class="header__logo"
-      :src="imgLogo"
-      alt=""
-      @click="$router.push('/')"
-    />
-    <div class="header-toolbox">
-      <CustomDropdown
-        class="header-toolbox__auth"
-        v-if="user === null"
-        imgTitle="/assets/img/account_white.svg"
-        textTitle="Sign in"
-        :openOnHover="true"
-        :action="auth"
-        :items="itemsAuth"
+  <Toolbar class="header">
+    <template #left>
+      <img
+        class="header__logo logo"
+        src="@/assets/img/logo.gif"
+        alt=""
+        @click="$router.push('/')"
       />
-      <div
-        class="header-toolbox__auth-complete"
-        v-else
+    </template>
+
+    <template #right>
+      <CustomDropdown
+        v-if="!isAuthenticated"
+        openOnHover
+        class="header-toolbox__auth"
       >
-        <img
-          class="header-toolbox__auth-complete__img"
-          :src="user.photoURL"
-          alt=""
-        />
-        <span
-          class="header-toolbox__auth-complete__text"
-        >
+        <template v-slot:title>
+          <Icon
+            class="iconify"
+            icon="mdi:account"
+            color="white"
+          />
+          Sign in
+        </template>
+        <template v-slot:items>
+          <div
+            class="dropdown-item"
+            @click="authenticate('google')"
+          >
+            <Icon
+              class="iconify"
+              icon="mdi:google"
+              color="white"
+            />
+            Google
+          </div>
+          <div
+            class="dropdown-item"
+            @click="authenticate('github')"
+          >
+            <Icon
+              class="iconify"
+              icon="mdi:github"
+              color="white"
+            />
+            GitHub
+          </div>
+        </template>
+      </CustomDropdown>
+      <CustomDropdown
+        v-else
+        class="header-toolbox__auth-complete"
+      >
+        <template v-slot:title>
+          <img
+            v-if="!!user.photoURL"
+            :src="user.photoURL"
+            alt=""
+          />
+          <Icon
+            v-else
+            class="iconify"
+            icon="mdi:account"
+            color="white"
+          />
           {{ user.displayName }}
-        </span>
+        </template>
+        <template v-slot:items>
+          <div
+            class="dropdown-item"
+            @click="logout"
+          >
+            <Icon
+              class="iconify"
+              icon="mdi:logout"
+              color="white"
+            />
+            Logout
+          </div>
+        </template>
+      </CustomDropdown>
+
+      <div
+        v-if="isAuthenticated"
+        class="header-toolbox__add-model-button"
+        @click="$router.push('/add')"
+      >
+        <Icon
+          icon="mdi:plus"
+          color="white"
+        />
+        Add model
       </div>
-    </div>
-  </div>
+    </template>
+  </Toolbar>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 import { useStore } from '@/store'
 
-import {
-  getAuth,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
-  browserLocalPersistence,
-
-} from 'firebase/auth'
-
-import { IAuthItem } from '@/types'
+import { Icon } from '@iconify/vue'
 
 import CustomDropdown from '@/components/CustomDropdown/index.vue'
 
@@ -56,72 +108,17 @@ export default defineComponent({
   name: 'HeaderComponent',
   components: {
     CustomDropdown,
+    Icon,
   },
   setup () {
     const store = useStore()
 
-    const itemsAuth: IAuthItem[] = [
-      {
-        type: 'google',
-        name: 'Google',
-        imgSrc: '/assets/img/google_white.svg',
-      },
-      {
-        type: 'github',
-        name: 'GitHub',
-        imgSrc: '/assets/img/github_white.svg',
-      }
-    ]
-
-    const auth = (item: IAuthItem) => {
-      const auth = getAuth(store.state.Firebase.app)
-      auth.useDeviceLanguage()
-      auth.setPersistence(browserLocalPersistence)
-      const getProvider = (): GoogleAuthProvider | GithubAuthProvider => {
-        switch (item.type) {
-          case 'google': {
-            const provider: GoogleAuthProvider = new GoogleAuthProvider()
-            provider.addScope('profile')
-            provider.addScope('email')
-            return provider
-          }
-          case 'github': {
-            const provider: GithubAuthProvider = new GithubAuthProvider()
-            provider.setCustomParameters({
-              allow_signup: 'false',
-            })
-            provider.addScope('read:user')
-            provider.addScope('user:email')
-            return provider
-          }
-          default: throw new Error('Invalid auth provider type!')
-        }
-      }
-      const provider: GoogleAuthProvider | GithubAuthProvider = getProvider()
-      const isGoogle = typeof provider === typeof GoogleAuthProvider
-      signInWithPopup(auth, getProvider())
-        .then(userCredential => {
-          store.commit('setUser', userCredential.user)
-          localStorage.setItem(
-            'authCredential',
-            JSON.stringify(
-              isGoogle
-                ? GoogleAuthProvider.credentialFromResult(userCredential)!
-                : GithubAuthProvider.credentialFromResult(userCredential)!
-            )
-          )
-          localStorage.setItem('userInfo', JSON.stringify(userCredential.user))
-        })
-        .catch(error => {
-          console.log(`Auth error ${error.code}: ${error.message}`)
-        })
-    }
-
     return {
-      imgLogo: store.state.imgLogo,
       user: computed(() => store.state.User),
-      itemsAuth,
-      auth,
+      authenticate:
+        (providerName: string) => store.dispatch('auth', providerName),
+      logout: () => store.dispatch('logout'),
+      isAuthenticated: computed(() => store.getters.isAuthenticated),
     }
   },
 })
@@ -130,16 +127,9 @@ export default defineComponent({
 <style lang="sass" scoped>
 $titleBackground: #CE93D8
 $color: white
-=shadow
-  box-shadow: 1px 1px 5px grey
 
 .header
-  display: flex
-  flex-flow: row nowrap
-  justify-content: space-between
-
-  background-color: #C5CAE9
-  padding: 0.5em
+  background-color: $mainColor
 
   &__logo
     height: 2.2em
@@ -151,15 +141,22 @@ $color: white
 
     height: 2.2em
 
+    & svg
+      font-size: 24px
+      margin-right: 14px
+
     &__auth-complete
       display: flex
       flex: 0 0
       padding: 0.3em
       background-color: $titleBackground
       color: $color
-      +shadow
+      +shadow(grey)
 
       &__img
         margin-right: 1em
         border-radius: 50%
+
+    &__add-model-button
+      +button(14px)
 </style>

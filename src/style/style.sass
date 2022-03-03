@@ -1,0 +1,52 @@
+@import '_variables'
+@import '_theme-override'
+
+*
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+
+=shadow($color: grey)
+  box-shadow: 1px 1px 5px 0 $color
+
+=chip
+  padding: 0.3em 1em
+  border-radius: 2em
+  background-color: #9cd
+  color: #fef
+  cursor: pointer
+
+=input
+  border: none
+  +shadow(grey)
+  border-radius: 2em
+
+  &:focus
+    +shadow(lightblue)
+
+=button($marginRight: 0)
+  flex: 0 0
+  margin-right: $marginRight !important
+
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 0.4em 1em !important
+
+  background-color: $buttonBackground
+  color: $fontColor
+  white-space: nowrap
+  cursor: pointer
+  +shadow
+  border-radius: 1em
+
+=buttonDisabled
+  background-color: $buttonBackgroundDisabled !important
+  color: $fontColorDisabled !important
+  cursor: not-allowed
+
+.iconify
+  font-size: 24px
+
+.logo
+  cursor: pointer
